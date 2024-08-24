@@ -192,6 +192,7 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << size << "\r\n";
                 char *buffer = new char[size]{};
                 htmlDataObj.GetDataHere(buffer);
+                bufferToFile(buffer, size, ("clipboard-history/html/html-"s + getTimeString() + ".html"s).c_str());
                 delete[] buffer;
                 logTextCtrl.AppendText("wxDF_HTML "s + std::to_string(size) + "\r\n");
             } else {

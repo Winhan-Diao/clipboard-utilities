@@ -1,4 +1,5 @@
 clipboard-history/
 .code_backup/
+release/
 *.exe
 *.dll
