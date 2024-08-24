@@ -1,0 +1,26 @@
+#include <wx/wx.h>
+#include <Windows.h>
+#include <wx/clipbrd.h>
+#include <memory>
+#include <wx/notebook.h>
+#include <type_traits>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <chrono>
+#include <wx/stc/stc.h>
+#include <wx/richtext/richtextctrl.h>
+#include <wx/hyperlink.h>
+#include <array>
+#include <bitset>
+#include <memory>
+#include <wx/spinctrl.h>
+#include <wx/filename.h>
+#include <wx/filesys.h>
+#include <wx/dir.h>
+#include <wx/taskbar.h>
+#include <wx/mstream.h>
+#include <map>
+#include <wx/arrstr.h>
+
+#include "resources/icon.xpm"

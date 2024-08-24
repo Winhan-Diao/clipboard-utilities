@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe build active file",
+            "command": "C:\\Program Files\\CodeBlocks\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-std=c++2a",
+                "-fdiagnostics-color=always",
+                "-I", "${env:wxwin}\\include",
+                "-I", "${env:wxwin}\\lib\\gcc_dll\\mswu",
+                "-L", "${env:wxwin}\\lib\\gcc_dll",
+                "-L./libs",
+                "-D__WXMSW__",
+                "-D_UNICODE",
+                "-DWXUSINGDLL",
+                "-g",
+                "usage.cpp",
+                "panels.cpp",
+                "history_cleaner.cpp",
+                "clipboard_utilities.cpp",
+                "-o",
+                "${fileDirname}\\Clipboard Utilities.exe",
+                "-lwxmsw32u",
+                "-lwxmsw32u_gl",
+                "-mwindows",
+
+                // "-Wl,-eCustomWinMainCRTStartup",
+                // "-L. -lwxmsw32u_gcc_custom",
+                // "-Wl,-rpath=../libs",
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: C:\\Program Files\\CodeBlocks\\MinGW\\bin\\g++.exe"
+        }
+    ]
+}
