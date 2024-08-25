@@ -47,17 +47,27 @@ CustomFrame::CustomFrame()
 {
     SetIcon(icon_xpm);
 
+    wxBoxSizer generalSizer{wxVERTICAL};
     wxBoxSizer *sizer = new wxBoxSizer{wxVERTICAL};
+    wxHyperlinkCtrl *enabledText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("✅ Clipboard Recording On"), wxEmptyString};
+    wxHyperlinkCtrl *disabledText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("❎ Clipboard Recording Off"), wxEmptyString};
     wxHyperlinkCtrl *introText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("👋 Introduction"), wxEmptyString};
     wxHyperlinkCtrl *configText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("🛠️ Set Configurations"), wxEmptyString};
     wxHyperlinkCtrl *aboutText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("ℹ About The Project"), wxEmptyString};
     wxHyperlinkCtrl *revealText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("📂 Reveal History Folder"), "file:///D:/Develop/cpp/vscode/gui/implementation_2_clipboard/clipboard-history"};
     wxFont textFont{15, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, true};
+    wxFont boldTextFont{15, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, true};
+    enabledText->SetFont(boldTextFont);
+    disabledText->SetFont(boldTextFont);
     introText->SetFont(textFont);
     configText->SetFont(textFont);
     aboutText->SetFont(textFont);
     revealText->SetFont(textFont);
     wxSizerFlags textFlags{wxSizerFlags().Border(wxLEFT, 5)};
+    sizer->Add(enabledText, textFlags);
+    sizer->Add(disabledText, textFlags);
+    sizer->AddSpacer(5);
+    sizer->Add(new wxStaticLine{&mainPanel}, wxSizerFlags{textFlags}.Expand());
     sizer->Add(introText, textFlags);
     sizer->AddSpacer(5);
     sizer->Add(configText, textFlags);
@@ -67,6 +77,11 @@ CustomFrame::CustomFrame()
     sizer->Add(revealText, textFlags);
     sizer->AddSpacer(5);
     mainPanel.SetSizer(sizer);
+
+    disabledText->SetNormalColour(wxColor{0x77, 0x77, 0x77});
+    disabledText->Hide();
+
+    generalSizer.Add(&mainPanel, wxSizerFlags().Proportion(10).Expand());
     
     
     wxFont logFont(10, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Courier New");
@@ -84,6 +99,8 @@ CustomFrame::CustomFrame()
         }
     });
     Bind(DRAW_CLIPBOARD_EVENT, [&](auto& e) {
+        if (!general_usage::ENABLED) return;
+
         logTextCtrl.AppendText(getTimeString() + "\r\n");
         this->clipboardFunc();
 
@@ -120,6 +137,20 @@ CustomFrame::CustomFrame()
             wxMessageBox("Can't open such directory.\r\nmanually check if \"clipboard-history\" exists under the root?", "Error", wxOK | wxICON_ERROR);
         }
     }, wx_usage::ID_JMP_PAGE);
+    enabledText->Bind(wxEVT_HYPERLINK, [=](auto& e){
+        enabledText->Show(false);
+        disabledText->Show(true);
+        disabledText->SetVisited(false);
+        enabledText->GetContainingSizer()->Layout();
+        general_usage::ENABLED = false;
+    });
+    disabledText->Bind(wxEVT_HYPERLINK, [=](auto& e){
+        enabledText->Show(true);
+        disabledText->Show(false);
+        enabledText->SetVisited(false);
+        enabledText->GetContainingSizer()->Layout();
+        general_usage::ENABLED = true;
+    });
     
 }
 

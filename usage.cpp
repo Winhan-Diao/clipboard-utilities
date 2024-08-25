@@ -49,6 +49,7 @@ namespace wx_usage {
 }
 
 namespace general_usage {
+    bool ENABLED{true};
     bool endianTest() {
         char *cArr = new char[sizeof(int32_t)]{};
         new(cArr) int32_t{0x01020304};

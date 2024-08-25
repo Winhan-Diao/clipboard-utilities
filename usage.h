@@ -19,15 +19,17 @@ namespace wx_usage {
         BMP,
         PNG,
         JPEG,
+        XPM,
         _MAX,
     };
     struct FormattedImageInfo {
         wxBitmapType bitmapType;
         std::string extention;
     };
-    static const std::map<enumType, std::pair<std::string, FormattedImageInfo>> FORMATTED_IMAGE_TYPE_WITH_INFO{{BMP, {"BMP"s, {wxBITMAP_TYPE_BMP, ".bmp"s}}}
+    const std::map<enumType, std::pair<std::string, FormattedImageInfo>> FORMATTED_IMAGE_TYPE_WITH_INFO{{BMP, {"BMP"s, {wxBITMAP_TYPE_BMP, ".bmp"s}}}
                                                                                                         , {PNG, {"PNG"s, {wxBITMAP_TYPE_PNG, ".png"s}}}
                                                                                                         , {JPEG, {"JPEG (non-alpha)"s, {wxBITMAP_TYPE_JPEG, ".jpeg"s}}}
+                                                                                                        , {XPM, {"XPM"s, {wxBITMAP_TYPE_XPM, ".xpm"s}}}
                                                                                                         };
     
     enum CustomWindowID {
@@ -59,6 +61,7 @@ namespace wx_usage {
 }
 
 namespace general_usage {
+    extern bool ENABLED;
     bool endianTest();
     extern bool isBE;
 }

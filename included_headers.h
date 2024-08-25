@@ -22,5 +22,6 @@
 #include <wx/mstream.h>
 #include <map>
 #include <wx/arrstr.h>
+#include <wx/statline.h>
 
 #include "resources/icon.xpm"
