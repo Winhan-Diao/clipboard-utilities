@@ -1,3 +1,4 @@
+#pragma once
 #include "usage.h"
 
 namespace builder {
