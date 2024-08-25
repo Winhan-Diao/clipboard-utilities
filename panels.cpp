@@ -190,6 +190,5 @@ ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
 
 
     this->SetSizer(generalSizer);
-    this->Hide();
 }   
 

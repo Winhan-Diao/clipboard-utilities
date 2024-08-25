@@ -157,9 +157,17 @@ CustomFrame::CustomFrame()
 std::string CustomFrame::clipboardFunc() {
     std::string text{};
     if(wxTheClipboard->Open()) {
+        if (wxTheClipboard->IsSupported(wxDF_INVALID)) {
+            std::cout << "wxDF_INVALID" << "\r\n";
+            logTextCtrl.AppendText("wxDF_INVALID\r\n");
+        }
         if (wxTheClipboard->IsSupported(wxDF_METAFILE)) {
             std::cout << "wxDF_METAFILE" << "\r\n";
             logTextCtrl.AppendText("wxDF_METAFILE\r\n");
+        }
+        if (wxTheClipboard->IsSupported(wxDF_DIF)) {
+            std::cout << "wxDF_DIF" << "\r\n";
+            logTextCtrl.AppendText("wxDF_DIF\r\n");
         }
         if (wxTheClipboard->IsSupported(wxDF_FILENAME)) {
             std::cout << "wxDF_FILENAME" << "\r\n";
@@ -181,8 +189,8 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << "\r\n";
             }
         }
-        if (wx_usage::ConfigStruct::ENABLE_DIB & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_DIB)) {
-            std::cout << "wxDF_DIB" << " ";
+        if (wx_usage::ConfigStruct::ENABLE_DIB & wx_usage::CONFIG.binaryData && (wxTheClipboard->IsSupported(wxDF_DIB) || wxTheClipboard->IsSupported(wxDF_BITMAP))) {
+            std::cout << "wxDF_DIB/wxDF_BITMAP" << " ";
             wxBitmapDataObject bitmapDataObj{};
             if (wxTheClipboard->GetData(bitmapDataObj)) {
                 size_t size = bitmapDataObj.GetDataSize() + 14;
