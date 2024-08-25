@@ -20,6 +20,7 @@ namespace wx_usage {
         PNG,
         JPEG,
         XPM,
+        ICO,
         _MAX,
     };
     struct FormattedImageInfo {
@@ -30,6 +31,7 @@ namespace wx_usage {
                                                                                                         , {PNG, {"PNG"s, {wxBITMAP_TYPE_PNG, ".png"s}}}
                                                                                                         , {JPEG, {"JPEG (non-alpha)"s, {wxBITMAP_TYPE_JPEG, ".jpeg"s}}}
                                                                                                         , {XPM, {"XPM"s, {wxBITMAP_TYPE_XPM, ".xpm"s}}}
+                                                                                                        , {ICO, {"ICO (max scale 255)"s, {wxBITMAP_TYPE_ICO, ".ico"s}}}
                                                                                                         };
     
     enum CustomWindowID {
