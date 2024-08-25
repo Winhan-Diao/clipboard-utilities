@@ -43,7 +43,7 @@ CustomFrame::CustomFrame()
     , mainPanel{&notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxSUNKEN_BORDER}
     , logTextCtrl{&notebook, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE} 
     , introPanel{&notebook}
-    , configPanel{&notebook}
+    , configWindow{builder::buildSingleChildSrcolledWindow<ConfigPanel>(&notebook)}
 {
     SetIcon(icon_xpm);
 
@@ -94,7 +94,7 @@ CustomFrame::CustomFrame()
     Bind(wxEVT_ICONIZE, [&](wxIconizeEvent& e){
         if (e.IsIconized()) {
             this->Hide();
-            this->taskBarIcon.SetIcon(wxICON(sample), "What is wxICON(sample)?");
+            this->taskBarIcon.SetIcon(wxICON(sample), "Clipboard Utilities");
             e.Skip();
         }
     });
@@ -122,7 +122,7 @@ CustomFrame::CustomFrame()
     }, wx_usage::ID_JMP_PAGE);
     configText->Bind(wxEVT_HYPERLINK, [&](auto& e) {
         if (notebook.GetPageCount() > 2) notebook.RemovePage(2);
-        notebook.AddPage(&configPanel, "&Configurations");
+        notebook.AddPage(configWindow, "&Configurations");
         notebook.SetSelection(2);
     }, wx_usage::ID_JMP_PAGE);
     aboutText->Bind(wxEVT_HYPERLINK, [&](auto& e) {
@@ -189,11 +189,20 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << size << "\r\n";
                 wxBitmap bitmap{bitmapDataObj.GetBitmap()};
                 if (bitmap.IsOk()) {
-                    if (wx_usage::CONFIG.binaryData & wx_usage::ConfigStruct::STORE_FORMATTED_IMG)
+                    if (wx_usage::CONFIG.binaryData & wx_usage::ConfigStruct::STORE_FORMATTED_IMG) {
+                        if (wx_usage::CONFIG.imageType == wx_usage::ICO) {
+                            std::cout << "width " << bitmap.GetWidth() << "; height " << bitmap.GetHeight() << "\r\n";      //debug
+                            if (std::max(bitmap.GetWidth(), bitmap.GetHeight()) > 255) {
+                                if (bitmap.GetHeight() > bitmap.GetWidth())
+                                    wxBitmap::Rescale(bitmap, wxSize{bitmap.GetWidth() * 255 / bitmap.GetHeight(), 255});
+                                else
+                                    wxBitmap::Rescale(bitmap, wxSize{255, bitmap.GetHeight() * 255 / bitmap.GetWidth()});
+                            }
+                        }
                         bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::CONFIG.imageType).second.extention, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::CONFIG.imageType).second.bitmapType);
-                    else 
-                        // bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + ".xpm", wxBITMAP_TYPE_XPM);     //test
+                    } else {
                         bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.extention, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.bitmapType);
+                    } 
                 } else {
                     std::cerr << "Bitmap Is Not OK" << "\r\n";      //debug
                 }

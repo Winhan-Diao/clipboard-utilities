@@ -1,5 +1,6 @@
 #include "panels.h"
 #include "history_cleaner.h"
+#include "widgets.h"
 
 std::string getTimeString() {
     auto now = std::chrono::system_clock::now();
@@ -43,7 +44,7 @@ class CustomFrame: public wxFrame {
     wxPanel mainPanel;
     wxTextCtrl logTextCtrl;
     IntroPanel introPanel;
-    ConfigPanel configPanel;
+    wxScrolledWindow *configWindow;
 public:
     CustomFrame();
     std::string clipboardFunc();

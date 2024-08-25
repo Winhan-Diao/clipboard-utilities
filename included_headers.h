@@ -23,5 +23,6 @@
 #include <map>
 #include <wx/arrstr.h>
 #include <wx/statline.h>
+#include <wx/scrolwin.h>
 
 #include "resources/icon.xpm"
