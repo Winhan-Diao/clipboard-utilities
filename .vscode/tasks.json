@@ -19,6 +19,7 @@
                 "usage.cpp",
                 "panels.cpp",
                 "history_cleaner.cpp",
+                "widgets.cpp",
                 "clipboard_utilities.cpp",
                 "-o",
                 "${fileDirname}\\Clipboard Utilities.exe",
