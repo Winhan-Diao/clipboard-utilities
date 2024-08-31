@@ -21,6 +21,7 @@
                 "history_cleaner.cpp",
                 "widgets.cpp",
                 "clipboard_utilities.cpp",
+                "utils.cpp",
                 "-o",
                 "${fileDirname}\\Clipboard Utilities.exe",
                 "-lwxmsw32u",
