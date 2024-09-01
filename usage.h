@@ -47,16 +47,21 @@ namespace wx_usage {
         valueType maxStorage;
         valueType maxCount;
         enumType imageType;
+        
         static constexpr binaryDataType ENABLE_DIB = 1 << 0;
         static constexpr binaryDataType ENABLE_TEXT = 1 << 1;
         static constexpr binaryDataType ENABLE_UNICODE_TEXT = 1 << 2;
         static constexpr binaryDataType ENABLE_HTML = 1 << 3;
+
         static constexpr binaryDataType SAVE_WHEN_STATRT = 1 << 4;
         static constexpr binaryDataType CLEAN_BY_DAY = 1 << 5;
         static constexpr binaryDataType CLEAN_BY_STORAGE = 1 << 6;
         static constexpr binaryDataType CLEAN_BY_COUNT = 1 << 7;
+
         static constexpr binaryDataType STORE_FORMATTED_IMG = 1 << 8;
-    } DEFAULT_CONFIG{0b0'0100'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
+        static constexpr binaryDataType ENABLE_VERBOSE = 1 << 9;
+
+    } DEFAULT_CONFIG{0b00'0100'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
     void writeConfig(const ConfigStruct& config);
     ConfigStruct loadConfig();
     extern std::remove_cv_t<decltype(DEFAULT_CONFIG)> CONFIG;
@@ -66,6 +71,8 @@ namespace general_usage {
     extern bool ENABLED;
     bool endianTest();
     extern bool isBE;
+    #define debug(msg) _debug(msg, __FILE__, __LINE__, __FUNCTION__)
+    void _debug(const wxString& msg, const char* file, int line, const char* func);
 }
 
 #endif

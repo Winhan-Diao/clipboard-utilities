@@ -13,4 +13,6 @@ namespace builder {
         sw->Hide();
         return sw;
     }
+
+    wxPanel *buildVStaticBoxPanel(wxWindow *parent, const wxString& title, const wxSizerFlags& sizerFlags = wxSizerFlags().Expand().Proportion(0));
 }

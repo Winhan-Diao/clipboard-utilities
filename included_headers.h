@@ -1,3 +1,4 @@
+#pragma once
 #include <wx/wx.h>
 #include <Windows.h>
 #include <wx/clipbrd.h>

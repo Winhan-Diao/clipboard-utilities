@@ -1,4 +1,5 @@
 #include "panels.h"
+#include "widgets.h"
 
 IntroPanel::IntroPanel() = default;
 IntroPanel::IntroPanel(wxWindow *parent): wxPanel{parent} {
@@ -16,7 +17,7 @@ IntroPanel::IntroPanel(wxWindow *parent): wxPanel{parent} {
 
     richTextCtrl->BeginSymbolBullet(_T("•"), 10, 20);
     
-    richTextCtrl->WriteText("This is an application that help you record your copy history.\r\n");
+    richTextCtrl->WriteText("This is an application that help you store your clipboard history.\r\n");
     richTextCtrl->WriteText("Currently support text (raw & UTF), HTML and picture (by default bitmap picture).\r\n");
     richTextCtrl->WriteText("The records are stored in \"clipboard-history\" directory under the same root.\r\n");
     richTextCtrl->WriteText("The recording details can be seen under \"log\" page.\r\n");
@@ -53,7 +54,7 @@ struct CheckBoxFunc : public BaseCheckBoxFunc {
         }
     };
     void debugCode() override {
-        std::cout << "[wx_usage::CONFIG.binaryData] " << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData) << "\r\n";       //debug
+        general_usage::debug(wxString{"[CheckBoxFunc] [wx_usage::CONFIG.binaryData] "} << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData).to_string());        //debug
     }
 };
 
@@ -78,9 +79,10 @@ public:
     void extraOperations() override {
         spinCtrl->Show(checkBox->GetValue());
         checkBox->GetContainingSizer()->Layout();
+        checkBox->GetParent()->GetContainingSizer()->Layout();
     }
     void debugCode() override {
-        std::cout << "[wx_usage::CONFIG] " << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData) << ' ' << wx_usage::CONFIG.maxDay << ' ' << wx_usage::CONFIG.maxStorage << ' ' << wx_usage::CONFIG.maxCount << "\r\n";     //debug
+        general_usage::debug(wxString{} << "[AdditionalSpinCtrlCheckBoxFunc] [wx_usage::CONFIG] " << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData).to_string() << ' ' << wx_usage::CONFIG.maxDay << ' ' << wx_usage::CONFIG.maxStorage << ' ' << wx_usage::CONFIG.maxCount);       //debug
     }
 };
 
@@ -109,9 +111,10 @@ public:
         for (const auto& [type, info]: enumMap) {
             arrStr.Add(info.first);
         }
-        std::cout << "[vecStr] ";       //debug
-        std::for_each(arrStr.begin(), arrStr.end(), [](const auto& i){std::cout << i << ' ';});      //debug
-        std::cout << "\r\n";        //debug
+        std::stringstream ss{};
+        ss << "[Only Terminal] " << "[vecStr] ";       //debug
+        std::for_each(arrStr.begin(), arrStr.end(), [&ss](const auto& i){ss << i << ' ';});      //debug
+        general_usage::debug(ss.str());     //debug
 
         comboBox = new wxComboBox(checkBox->GetParent(), wxID_ANY, enumMap.at(wx_usage::CONFIG.imageType).first, wxDefaultPosition, wxDefaultSize, arrStr);
         checkBox->GetContainingSizer()->Insert(checkBoxIndex + 1, comboBox);
@@ -124,9 +127,10 @@ public:
     void extraOperations() override {
         comboBox->Show(checkBox->GetValue());
         checkBox->GetContainingSizer()->Layout();
+        checkBox->GetParent()->GetContainingSizer()->Layout();
     }
     void debugCode() override {
-        std::cout << "[wx_usage::CONFIG] " << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData) << ' ' << wx_usage::CONFIG.maxDay << ' ' << wx_usage::CONFIG.maxStorage << ' ' << wx_usage::CONFIG.maxCount << ' ' << (unsigned short)wx_usage::CONFIG.imageType << "\r\n";     //debug
+        general_usage::debug(wxString{"[AdditionalComboBoxCheckBoxFunc] [wx_usage::CONFIG] "} << std::bitset<sizeof(decltype(shift)) * 8>(wx_usage::CONFIG.binaryData).to_string() << ' ' << wx_usage::CONFIG.maxDay << ' ' << wx_usage::CONFIG.maxStorage << ' ' << wx_usage::CONFIG.maxCount << ' ' << (unsigned short)wx_usage::CONFIG.imageType);     //debug
     }
 };
 
@@ -143,19 +147,13 @@ ConfigPanel::ConfigPanel() = default;
 ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
     wxSizerFlags checkBoxFlags = wxSizerFlags{}.Border(wxALL, 5);
     wxBoxSizer *generalSizer = new wxBoxSizer{wxVERTICAL};
+    this->SetSizer(generalSizer);
 
-    wxPanel *recordingConfigPanel = new wxPanel{this};
-    wxStaticBox *recordingConfigBox = new wxStaticBox{recordingConfigPanel, wxID_ANY, "Recording Config"};
-    wxStaticBoxSizer *recordingConfigBoxSizer = new wxStaticBoxSizer{recordingConfigBox, wxVERTICAL};
-    recordingConfigPanel->SetSizer(recordingConfigBoxSizer);
-    generalSizer->Add(recordingConfigPanel, wxSizerFlags().Expand().Proportion(10));
+    wxPanel *recordingConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Recording Config"});
 
+    wxPanel *historyConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Storing Config"});
 
-    wxPanel *historyConfigPanel = new wxPanel{this};
-    wxStaticBox *historyConfigBox = new wxStaticBox{historyConfigPanel, wxID_ANY, "Storing Config"};
-    wxStaticBoxSizer *historyConfigBoxSizer = new wxStaticBoxSizer{historyConfigBox, wxVERTICAL};
-    historyConfigPanel->SetSizer(historyConfigBoxSizer);
-    generalSizer->Add(historyConfigPanel, wxSizerFlags().Expand().Proportion(10));
+    wxPanel *loggingConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Logging Config"});
 
     std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)> checkBoxLam = [](wxCheckBox *checkBox, const wx_usage::ConfigStruct::binaryDataType& shift){
         return std::make_shared<CheckBoxFunc>(checkBox, shift);
@@ -173,22 +171,20 @@ ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
                             , std::make_tuple(historyConfigPanel, "Clean the oldest record when reaching certain storage limit. (MB)", wx_usage::ConfigStruct::CLEAN_BY_STORAGE, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxStorage))
                             , std::make_tuple(historyConfigPanel, "Clean the oldest record by restricting the maximum count.", wx_usage::ConfigStruct::CLEAN_BY_COUNT, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxCount))
                             , std::make_tuple(historyConfigPanel, "Save image as other formats (default BMP)", wx_usage::ConfigStruct::STORE_FORMATTED_IMG, comboBoxLamBuilder(&wx_usage::ConfigStruct::imageType, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO))
+                            , std::make_tuple(loggingConfigPanel, "Enable Verbose Logging", wx_usage::ConfigStruct::ENABLE_VERBOSE, checkBoxLam)
                             };
     for (auto& [panel, str, shift, checkBoxLam] : checkBoxConfigInfo) {
         auto checkBox = new wxCheckBox{panel, wxID_ANY, str};
         panel->GetSizer()->Add(checkBox, checkBoxFlags);
-        checkBox->SetValue((wx_usage::CONFIG.binaryData & shift) != 0);
-        // std::cout << ((wx_usage::CONFIG.binaryData & shift) != 0) << "\r\n";       //debug
-        
+        checkBox->SetValue((wx_usage::CONFIG.binaryData & shift) != 0);        
         checkBox->Bind(wxEVT_CHECKBOX, [handler = checkBoxLam(checkBox, shift)](wxCommandEvent& e) {
             (*handler)(e);
         });
         wxPostEvent(checkBox, wxCommandEvent(wxEVT_CHECKBOX));
     }
 
-    historyConfigBoxSizer->Add(new wxPanel{historyConfigPanel, wxID_ANY});
+    historyConfigPanel->GetSizer()->Add(new wxPanel{historyConfigPanel, wxID_ANY});
 
 
-    this->SetSizer(generalSizer);
 }   
 

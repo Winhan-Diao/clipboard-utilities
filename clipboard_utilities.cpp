@@ -2,7 +2,6 @@
 
 wxDEFINE_EVENT(DRAW_CLIPBOARD_EVENT, wxCommandEvent);
 
-
 CustomTeskBarIcon::CustomTeskBarIcon(CustomFrame *frame): frame(frame) {
     SetIcon(wxIcon(icon_xpm));
 }
@@ -14,26 +13,38 @@ wxBEGIN_EVENT_TABLE(CustomTeskBarIcon, wxTaskBarIcon)
     EVT_TASKBAR_LEFT_UP(CustomTeskBarIcon::OnLeftButtonClick)
 wxEND_EVENT_TABLE()
 
-class CustomLogTarget : public wxLog {
-public:
-    void DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) override {
-        if (level == wxLOG_Error) {
-            reinterpret_cast<CustomFrame *>(wxGetApp().getFrame())->getLogTextCtrl().AppendText("\r\n"s 
-                                                                                                + "[Error]\t"s + msg + "\r\n"s
-                                                                                                + "\tFile name: "s + info.filename + "\r\n"s
-                                                                                                + "\tAt line: "s + std::to_string(info.line) + "\r\n"s 
-                                                                                                + "\tFunction name: "s + info.func + "\r\n"s);
-        } else if (level == wxLOG_Warning) {
-            reinterpret_cast<CustomFrame *>(wxGetApp().getFrame())->getLogTextCtrl().AppendText("\r\n"s 
-                                                                                                + "[Warning]\t"s + msg + "\r\n"s
-                                                                                                + "\t\tFile name: "s + info.filename + "\r\n"s
-                                                                                                + "\t\tAt line: "s + std::to_string(info.line) + "\r\n"s 
-                                                                                                + "\t\tFunction name: "s + info.func + "\r\n"s);
-        } else {
-            wxLog::DoLogRecord(level, msg, info);
-        }
+void CustomLogTarget::DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) {
+    if (level == wxLOG_Error) {
+        reinterpret_cast<CustomFrame *>(wxGetApp().getFrame())->getLogTextCtrl().AppendText("\r\n"s
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            + "[Error]\t"s + msg + "\r\n"s
+                                                                                            + "\tFile name: "s + info.filename + "\r\n"s
+                                                                                            + "\tAt line: "s + std::to_string(info.line) + "\r\n"s 
+                                                                                            + "\tFunction name: "s + info.func + "\r\n"s
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            );
+    } else if (level == wxLOG_Warning) {
+        reinterpret_cast<CustomFrame *>(wxGetApp().getFrame())->getLogTextCtrl().AppendText("\r\n"s 
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            + "[Warning]\t"s + msg + "\r\n"s
+                                                                                            + "\t\tFile name: "s + info.filename + "\r\n"s
+                                                                                            + "\t\tAt line: "s + std::to_string(info.line) + "\r\n"s 
+                                                                                            + "\t\tFunction name: "s + info.func + "\r\n"s
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            );
+    } else if (level == wxLOG_Debug) {
+        reinterpret_cast<CustomFrame *>(wxGetApp().getFrame())->getLogTextCtrl().AppendText("\r\n"s 
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            + "[Debug]\t"s + msg + "\r\n"s
+                                                                                            + "\tFile name: "s + info.filename + "\r\n"s
+                                                                                            + "\tAt line: "s + std::to_string(info.line) + "\r\n"s 
+                                                                                            + "\tFunction name: "s + info.func + "\r\n"s
+                                                                                            + "- - - - - - - - - - - -"s + "\r\n"s
+                                                                                            );
+    } else {
+        wxLog::DoLogRecord(level, msg, info);
     }
-};
+}
 
 
 CustomFrame::CustomFrame()
@@ -104,15 +115,15 @@ CustomFrame::CustomFrame()
         logTextCtrl.AppendText(getTimeString() + "\r\n");
         this->clipboardFunc();
 
-        std::cout << "remove start" << "\r\n";      //debug
+        general_usage::debug("remove start");       //debug
         wxDir dir{"clipboard-history"};
         if (wxDir::Exists(dir.GetName())) {
-            std::cout << "remove 1 " << dir.GetName() << "\r\n";      //debug
+            general_usage::debug(wxString{"remove step 1 "} << dir.GetName());      //debug
             RemoveOldestDirTraverser traverser{};
             dir.Traverse(traverser);
-            std::cout << "remove 2" << "\r\n";      //debug
+            general_usage::debug(wxString{"remove step 2 "});     //debug
         }
-        std::cout << "remove end" << "\r\n";        //debug
+        general_usage::debug("remove end");       //debug
 
     });
     introText->Bind(wxEVT_HYPERLINK, [&](auto& e) {
@@ -135,6 +146,7 @@ CustomFrame::CustomFrame()
         wxFileName file{"clipboard-history"};
         if (!wxLaunchDefaultBrowser(wxFileSystem::FileNameToURL(file))) {
             wxMessageBox("Can't open such directory.\r\nmanually check if \"clipboard-history\" exists under the root?", "Error", wxOK | wxICON_ERROR);
+            wxLogError("Can't open such directory.\r\nmanually check if \"clipboard-history\" exists under the root?");       //error
         }
     }, wx_usage::ID_JMP_PAGE);
     enabledText->Bind(wxEVT_HYPERLINK, [=](auto& e){
@@ -197,9 +209,10 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << size << "\r\n";
                 wxBitmap bitmap{bitmapDataObj.GetBitmap()};
                 if (bitmap.IsOk()) {
+                    wxFileName::Mkdir(".\\clipboard-history\\image\\", wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
                     if (wx_usage::CONFIG.binaryData & wx_usage::ConfigStruct::STORE_FORMATTED_IMG) {
                         if (wx_usage::CONFIG.imageType == wx_usage::ICO) {
-                            std::cout << "width " << bitmap.GetWidth() << "; height " << bitmap.GetHeight() << "\r\n";      //debug
+                            general_usage::debug(wxString{"width "} << bitmap.GetWidth() << "; height" << bitmap.GetHeight());        //debug
                             if (std::max(bitmap.GetWidth(), bitmap.GetHeight()) > 255) {
                                 if (bitmap.GetHeight() > bitmap.GetWidth())
                                     wxBitmap::Rescale(bitmap, wxSize{bitmap.GetWidth() * 255 / bitmap.GetHeight(), 255});
@@ -212,9 +225,10 @@ std::string CustomFrame::clipboardFunc() {
                         bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.extention, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.bitmapType);
                     } 
                 } else {
-                    std::cerr << "Bitmap Is Not OK" << "\r\n";      //debug
+                    std::cerr << "Bitmap Is Not OK" << "\r\n";      //error
+                    wxLogError("Bitmap Is Not OK");     //error
                 }
-                logTextCtrl.AppendText("wxDF_DIB "s + std::to_string(size) + "\r\n");
+                logTextCtrl.AppendText("wxDF_DIB/wxDF_BITMAP "s + std::to_string(size) + "\r\n");
             } else {
                 std::cout << "\r\n";
             }
@@ -247,15 +261,23 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << "\r\n";
             }
         }
-        std::cout << "- - - - - -" << "\r\n";
-        logTextCtrl.AppendText("- - - - - - - - - -\r\n");
+        std::cout << "= = = = = =" << "\r\n";
+        logTextCtrl.AppendText("= = = = = = = = = =\r\n");
         wxTheClipboard->Close();
     }
     return text;
 
 }
 
-
+void CustomFrame::OnClose (wxCloseEvent& e) {
+    wx_usage::writeConfig(wx_usage::CONFIG);
+    general_usage::debug(wxString{"exit!"});      //debug
+    DestroyWindow(windows_usage::hWnd);
+    Destroy();
+}
+wxBEGIN_EVENT_TABLE(CustomFrame, wxFrame)
+    EVT_CLOSE(CustomFrame::OnClose)
+wxEND_EVENT_TABLE()
 
 IMPLEMENT_APP(CustomApp)
 
@@ -263,10 +285,11 @@ CustomApp::CustomApp(): customFrame{std::unique_ptr<CustomFrame>{new CustomFrame
 
 bool CustomApp::OnInit() {       
 
+    wxLog::SetActiveTarget(new CustomLogTarget{});
+
     // SetProcessDPIAware();
 
     ::wxInitAllImageHandlers();
-    wxImage::AddHandler(new wxPNGHandler);
 
     auto lam = [](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT CALLBACK {
         switch (message) {
@@ -302,23 +325,21 @@ bool CustomApp::OnInit() {
     windows_usage::hWnd = CreateWindow(windows_usage::wcex.lpszClassName, TEXT(""), 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, windows_usage::wcex.hInstance, NULL);
     SetClipboardViewer(windows_usage::hWnd);
 
-    wxLog::SetActiveTarget(new CustomLogTarget);
-
     customFrame->Show();
     return true;
 }
 
-int CustomApp::OnExit() {
-    std::cout << "exit!" << "\r\n";     //debug
-    wx_usage::writeConfig(wx_usage::CONFIG);
-    return 0;
-}
+// int CustomApp::OnExit() {
+//     wx_usage::writeConfig(wx_usage::CONFIG);
+//     general_usage::debug(wxString{"exit!"});      //debug
+//     return 0;
+// }
 
 wxFrame *CustomApp::getFrame() {
     return customFrame.get();
 }
 
 int main() {
-    std::cout << "[main]" << "\r\n";        //debug
+    general_usage::debug(wxString{} << "[Only Terminal] " << "[main]");       //debug
     return wxEntry();
 }

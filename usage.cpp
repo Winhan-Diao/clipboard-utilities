@@ -22,25 +22,29 @@ namespace windows_usage {
 namespace wx_usage {
     wxCommandEvent event{DRAW_CLIPBOARD_EVENT};
     void writeConfig(const ConfigStruct& config) {
-        std::ofstream ofs("config.dat", std::ios::out | std::ios::binary);
-        if (ofs) {
-            ofs.write(reinterpret_cast<const char *>(&config), sizeof(DEFAULT_CONFIG));
+        std::ofstream ofs{"config.dat", std::ios::out | std::ios::binary | std::ios::trunc};
+        if (ofs.is_open()) {
+            ofs.write(reinterpret_cast<const char *>(&config), sizeof(ConfigStruct));
+            ofs.close();
         } else {
-            std::cerr << "[error] Can't write config to file \"config.dat\"" << "\r\n";
+            std::cerr << "[error] Can't write config to file \"config.dat\"" << "\r\n";     //error
+            wxLogError("[error] Can't write config to file \"config.dat\"");        //error
         }
     }
     ConfigStruct loadConfig() {
-        std::fstream fs{"config.dat", std::ios::in | std::ios::binary};
-        if (fs) {
-            std::cout << "There is config.dat file." << "\r\n";     //debug
+        std::ifstream ifs{"config.dat", std::ios::in | std::ios::binary};
+        if (ifs.is_open()) {
+            general_usage::debug(wxString{} << "[Only Terminal] " << "There is config.dat file.");     //debug
             ConfigStruct config;
-            fs.read(reinterpret_cast<char *>(&config), sizeof(DEFAULT_CONFIG));
-            std::cout << (config.ENABLE_DIB & config.binaryData) << ' ' << (config.ENABLE_TEXT & config.binaryData) << ' ' << (config.ENABLE_UNICODE_TEXT & config.binaryData) << ' ' << (config.ENABLE_HTML & config.binaryData) << ' ' << (config.SAVE_WHEN_STATRT & config.binaryData) << "\r\n";        //debug
-            std::cout << "[config data] "<< std::hex << config.binaryData << "\r\n";        //debug
-            std::cout.unsetf(std::ios::hex);        //debug
+            ifs.read(reinterpret_cast<char *>(&config), sizeof(DEFAULT_CONFIG));
+            general_usage::debug(wxString{} << "[Only Terminal] " << (config.ENABLE_DIB & config.binaryData) << ' ' << (config.ENABLE_TEXT & config.binaryData) << ' ' << (config.ENABLE_UNICODE_TEXT & config.binaryData) << ' ' << (config.ENABLE_HTML & config.binaryData) << ' ' << (config.SAVE_WHEN_STATRT & config.binaryData));        //debug
+            char b[sizeof(config.binaryData) + 1]{0};      //debug
+            std::sprintf(b, "%X", config.binaryData);      //debug
+            general_usage::debug(wxString{} << "[Only Terminal] " << "[config data] " << b);        //debug
+            ifs.close();
             return config;
         } else {
-            std::cout << "There is NO config.dat file." << "\r\n";      //debug
+            general_usage::debug(wxString{} << "[Only Terminal] " << "There is NO config.dat file.");      //debug
             writeConfig(DEFAULT_CONFIG);
             return DEFAULT_CONFIG;
         }
@@ -58,5 +62,12 @@ namespace general_usage {
         return isBE;
     }
     bool isBE = endianTest();
+    void _debug(const wxString& msg, const char* file, int line, const char* func) {
+        if (wx_usage::ConfigStruct::ENABLE_VERBOSE & wx_usage::CONFIG.binaryData) {
+            std::cout << msg << "\r\n";
+            wxLog::OnLog(wxLOG_Debug, msg, wxLogRecordInfo{file, line, func, "component_"});
+        } 
+    }
+
 }
 

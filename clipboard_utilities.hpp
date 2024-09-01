@@ -3,6 +3,11 @@
 #include "widgets.h"
 #include "utils.h"
 
+class CustomLogTarget : public wxLog {
+public:
+    void DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) override;
+};
+
 class CustomFrame;
 
 class CustomTeskBarIcon: public wxTaskBarIcon {
@@ -28,13 +33,16 @@ public:
     wxTextCtrl& getLogTextCtrl() {
         return this->logTextCtrl;
     }
+
+    void OnClose(wxCloseEvent&);
+    wxDECLARE_EVENT_TABLE();
 };
 
 
 class CustomApp: public wxApp {
     std::unique_ptr<CustomFrame> customFrame;
     bool OnInit() override;
-    int OnExit() override;
+    // int OnExit() override;
 public:
     CustomApp();
     wxFrame *getFrame();
