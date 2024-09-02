@@ -65,7 +65,7 @@ CustomFrame::CustomFrame()
     wxHyperlinkCtrl *introText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("👋 Introduction"), wxEmptyString};
     wxHyperlinkCtrl *configText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("🛠️ Set Configurations"), wxEmptyString};
     wxHyperlinkCtrl *aboutText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("ℹ About The Project"), wxEmptyString};
-    wxHyperlinkCtrl *revealText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("📂 Reveal History Folder"), "file:///D:/Develop/cpp/vscode/gui/implementation_2_clipboard/clipboard-history"};
+    wxHyperlinkCtrl *revealText = new wxHyperlinkCtrl{&mainPanel, wx_usage::ID_JMP_PAGE, _T("📂 Reveal History Folder"), wxEmptyString};
     wxFont textFont{15, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, true};
     wxFont boldTextFont{15, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, true};
     enabledText->SetFont(boldTextFont);
@@ -271,8 +271,7 @@ std::string CustomFrame::clipboardFunc() {
 
 void CustomFrame::OnClose (wxCloseEvent& e) {
     wx_usage::writeConfig(wx_usage::CONFIG);
-    general_usage::debug(wxString{"exit!"});      //debug
-    DestroyWindow(windows_usage::hWnd);
+    general_usage::debug(wxString{} << "[Frame] " << "exit!");      //debug
     Destroy();
 }
 wxBEGIN_EVENT_TABLE(CustomFrame, wxFrame)
@@ -296,7 +295,6 @@ bool CustomApp::OnInit() {
         case WM_DRAWCLIPBOARD:
             static bool isFirstTime{true};
             if (!isFirstTime || wx_usage::ConfigStruct::SAVE_WHEN_STATRT & wx_usage::CONFIG.binaryData) {
-                // std::cout << GetLastError() << "\r\n";      //debug
                 wxPostEvent(wxGetApp().getFrame(), wxCommandEvent{DRAW_CLIPBOARD_EVENT});
             }
             isFirstTime = false;
@@ -306,15 +304,14 @@ bool CustomApp::OnInit() {
                 windows_usage::hNextViewer = (HANDLE)lParam;
             } else if (windows_usage::hNextViewer) {
                 SendMessage((HWND)windows_usage::hNextViewer, message, wParam, lParam);
-                break;
             }
+            break;
         case WM_DESTROY:
             ChangeClipboardChain(windows_usage::hWnd, (HWND)windows_usage::hNextViewer);
             PostQuitMessage(0);
             break;
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
-            break;
         }
         return 0;
     };
@@ -329,11 +326,11 @@ bool CustomApp::OnInit() {
     return true;
 }
 
-// int CustomApp::OnExit() {
-//     wx_usage::writeConfig(wx_usage::CONFIG);
-//     general_usage::debug(wxString{"exit!"});      //debug
-//     return 0;
-// }
+int CustomApp::OnExit() {
+    DestroyWindow(windows_usage::hWnd);
+    general_usage::debug(wxString{} << "[App] " << "exit!");      //debug
+    return 0;
+}
 
 wxFrame *CustomApp::getFrame() {
     return customFrame.get();

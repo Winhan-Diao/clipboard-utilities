@@ -42,7 +42,7 @@ public:
 class CustomApp: public wxApp {
     std::unique_ptr<CustomFrame> customFrame;
     bool OnInit() override;
-    // int OnExit() override;
+    int OnExit() override;
 public:
     CustomApp();
     wxFrame *getFrame();
