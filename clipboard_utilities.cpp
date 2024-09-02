@@ -280,7 +280,7 @@ wxEND_EVENT_TABLE()
 
 IMPLEMENT_APP(CustomApp)
 
-CustomApp::CustomApp(): customFrame{std::unique_ptr<CustomFrame>{new CustomFrame{}}} {}
+CustomApp::CustomApp(): customFrame{new CustomFrame{}} {}
 
 bool CustomApp::OnInit() {       
 
@@ -333,7 +333,7 @@ int CustomApp::OnExit() {
 }
 
 wxFrame *CustomApp::getFrame() {
-    return customFrame.get();
+    return customFrame;
 }
 
 int main() {
