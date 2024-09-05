@@ -38,7 +38,7 @@ namespace wx_usage {
             ConfigStruct config;
             ifs.read(reinterpret_cast<char *>(&config), sizeof(DEFAULT_CONFIG));
             general_usage::debug(wxString{} << "[Only Terminal] " << (config.ENABLE_DIB & config.binaryData) << ' ' << (config.ENABLE_TEXT & config.binaryData) << ' ' << (config.ENABLE_UNICODE_TEXT & config.binaryData) << ' ' << (config.ENABLE_HTML & config.binaryData) << ' ' << (config.SAVE_WHEN_STATRT & config.binaryData));        //debug
-            char b[sizeof(config.binaryData) + 1]{0};      //debug
+            char b[sizeof(config.binaryData) * 2 + 1]{0};      //debug
             std::sprintf(b, "%X", config.binaryData);      //debug
             general_usage::debug(wxString{} << "[Only Terminal] " << "[config data] " << b);        //debug
             ifs.close();
