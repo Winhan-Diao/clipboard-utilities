@@ -2,7 +2,7 @@
 #include "history_cleaner.h"
 #include "widgets.h"
 #include "utils.h"
-
+#include "dataobjects.h"
 class CustomLogTarget : public wxLog {
 public:
     void DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) override;

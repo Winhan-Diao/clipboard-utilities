@@ -22,6 +22,7 @@
                 "widgets.cpp",
                 "clipboard_utilities.cpp",
                 "utils.cpp",
+                "dataobjects.cpp",
                 "-o",
                 "${fileDirname}\\Clipboard Utilities.exe",
                 "-lwxmsw32u",

@@ -175,11 +175,23 @@ std::string CustomFrame::clipboardFunc() {
         }
         if (wxTheClipboard->IsSupported(wxDF_METAFILE)) {
             std::cout << "wxDF_METAFILE" << "\r\n";
+            
             logTextCtrl.AppendText("wxDF_METAFILE\r\n");
         }
         if (wxTheClipboard->IsSupported(wxDF_DIF)) {
-            std::cout << "wxDF_DIF" << "\r\n";
-            logTextCtrl.AppendText("wxDF_DIF\r\n");
+            std::cout << "wxDF_DIF" << " ";
+            DIFDataObject difDataObj{};
+            if (wxTheClipboard->GetData(difDataObj)) {
+                size_t size = difDataObj.GetDataSize();
+                std::cout << size << "\r\n";
+                char *buffer = new char[size]{};
+                difDataObj.GetDataHere(buffer);
+                bufferToFile(buffer, size, ("clipboard-history/dif/dif-"s + getTimeString() + ".dif"s).c_str());
+                delete[] buffer;
+                logTextCtrl.AppendText("wxDF_DIF\r\n");
+            } else {
+                std::cout << "\r\n";
+            }
         }
         if (wxTheClipboard->IsSupported(wxDF_FILENAME)) {
             std::cout << "wxDF_FILENAME" << "\r\n";
