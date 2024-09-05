@@ -166,6 +166,7 @@ ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
                             , std::make_tuple(recordingConfigPanel, "Enable Unicode Text Recording", wx_usage::ConfigStruct::ENABLE_UNICODE_TEXT, checkBoxLam)
                             , std::make_tuple(recordingConfigPanel, "Enable HTML Recording", wx_usage::ConfigStruct::ENABLE_HTML, checkBoxLam)
                             , std::make_tuple(recordingConfigPanel, "Enable Image Recording", wx_usage::ConfigStruct::ENABLE_DIB, checkBoxLam)
+                            , std::make_tuple(recordingConfigPanel, "Enable DIF (sheets format) Recording", wx_usage::ConfigStruct::ENABLE_DIF, checkBoxLam)
                             , std::make_tuple(recordingConfigPanel, "Record once from clipboard when program starts.", wx_usage::ConfigStruct::SAVE_WHEN_STATRT, checkBoxLam)
                             , std::make_tuple(historyConfigPanel, "Clean data passed certain days. (days)", wx_usage::ConfigStruct::CLEAN_BY_DAY, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxDay))
                             , std::make_tuple(historyConfigPanel, "Clean the oldest record when reaching certain storage limit. (MB)", wx_usage::ConfigStruct::CLEAN_BY_STORAGE, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxStorage))

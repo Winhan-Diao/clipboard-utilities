@@ -53,15 +53,16 @@ namespace wx_usage {
         static constexpr binaryDataType ENABLE_UNICODE_TEXT = 1 << 2;
         static constexpr binaryDataType ENABLE_HTML = 1 << 3;
 
-        static constexpr binaryDataType SAVE_WHEN_STATRT = 1 << 4;
-        static constexpr binaryDataType CLEAN_BY_DAY = 1 << 5;
-        static constexpr binaryDataType CLEAN_BY_STORAGE = 1 << 6;
-        static constexpr binaryDataType CLEAN_BY_COUNT = 1 << 7;
+        static constexpr binaryDataType ENABLE_DIF = 1 << 4;
+        static constexpr binaryDataType SAVE_WHEN_STATRT = 1 << 5;
+        static constexpr binaryDataType CLEAN_BY_DAY = 1 << 6;
+        static constexpr binaryDataType CLEAN_BY_STORAGE = 1 << 7;
 
-        static constexpr binaryDataType STORE_FORMATTED_IMG = 1 << 8;
-        static constexpr binaryDataType ENABLE_VERBOSE = 1 << 9;
+        static constexpr binaryDataType CLEAN_BY_COUNT = 1 << 8;
+        static constexpr binaryDataType STORE_FORMATTED_IMG = 1 << 9;
+        static constexpr binaryDataType ENABLE_VERBOSE = 1 << 10;
 
-    } DEFAULT_CONFIG{0b00'0100'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
+    } DEFAULT_CONFIG{0b000'1001'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
     void writeConfig(const ConfigStruct& config);
     ConfigStruct loadConfig();
     extern std::remove_cv_t<decltype(DEFAULT_CONFIG)> CONFIG;
