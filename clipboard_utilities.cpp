@@ -180,15 +180,15 @@ std::string CustomFrame::clipboardFunc() {
         }
         if (wxTheClipboard->IsSupported(wxDF_DIF)) {
             std::cout << "wxDF_DIF" << " ";
-            DIFDataObject difDataObj{};
+            UniversalDataObject difDataObj{wxDF_DIF};
             if (wxTheClipboard->GetData(difDataObj)) {
                 size_t size = difDataObj.GetDataSize();
                 std::cout << size << "\r\n";
                 char *buffer = new char[size]{};
                 difDataObj.GetDataHere(buffer);
-                bufferToFile(buffer, size, ("clipboard-history/dif/dif-"s + getTimeString() + ".dif"s).c_str());
+                bufferToFile(buffer, size, ("clipboard-history/sheets/dif-"s + getTimeString() + ".dif"s).c_str());
                 delete[] buffer;
-                logTextCtrl.AppendText("wxDF_DIF\r\n");
+                logTextCtrl.AppendText(wxString{} << "wxDF_DIF " << size << "\r\n");
             } else {
                 std::cout << "\r\n";
             }

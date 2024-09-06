@@ -1,18 +1,18 @@
 #pragma once
 #include "usage.h"
 
-class DIFDataObject: public wxDataObjectSimple {
+class UniversalDataObject: public wxDataObjectSimple {
 private:
     size_t m_datasize;
     char *m_data;
 public:
-    DIFDataObject(): wxDataObjectSimple(wxDF_DIF) {}
-    
+    UniversalDataObject(const wxDataFormat& dataFormat): wxDataObjectSimple(dataFormat) {}
+
     size_t GetDataSize() const override;
     bool GetDataHere(void *buf) const override;
     bool SetData(size_t size, const void *data) override;
 
-    virtual ~DIFDataObject() noexcept {
+    virtual ~UniversalDataObject() noexcept {
         delete[] m_data;
     }
 };
