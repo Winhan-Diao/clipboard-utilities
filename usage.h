@@ -36,7 +36,8 @@ namespace wx_usage {
     
     enum CustomWindowID {
         ID_JMP_PAGE,
-        ID_CUSTON_SPIN = 1,
+        ID_CUSTON_SPIN,
+        ID_ICON_TO_FRAME,
     };
     extern wxCommandEvent event;
     constexpr struct ConfigStruct {

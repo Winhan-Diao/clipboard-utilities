@@ -14,8 +14,11 @@ class CustomTeskBarIcon: public wxTaskBarIcon {
     CustomFrame *frame;
 public:
     CustomTeskBarIcon(CustomFrame *frame);
-    void OnLeftButtonClick(wxTaskBarIconEvent&);
-
+    template <class _Evt>
+    void OnEventIconToFrame(_Evt&);
+    void OnRightButtonClick(wxTaskBarIconEvent&);
+    void onEventExit(wxCommandEvent&);
+    wxMenu *CreatePopupMenu() override;
     wxDECLARE_EVENT_TABLE();
 };
 
@@ -53,3 +56,13 @@ wxString getOldest(const wxString& directory);
 bool checkIfToClean(const wxString& directory);
 
 DECLARE_APP(CustomApp)
+
+// =====================================
+//              definition
+// =====================================
+
+template <class _Evt>
+void CustomTeskBarIcon::OnEventIconToFrame(_Evt&) {
+    this->frame->Show(true);
+    this->frame->Iconize(false);
+}

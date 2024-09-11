@@ -5,12 +5,28 @@ wxDEFINE_EVENT(DRAW_CLIPBOARD_EVENT, wxCommandEvent);
 CustomTeskBarIcon::CustomTeskBarIcon(CustomFrame *frame): frame(frame) {
     SetIcon(wxIcon(icon_xpm));
 }
-void CustomTeskBarIcon::OnLeftButtonClick(wxTaskBarIconEvent&) {
-    frame->Show(true);
-    frame->Iconize(false);
+void CustomTeskBarIcon::OnRightButtonClick(wxTaskBarIconEvent&) {
+    wxMenu *menu = this->CreatePopupMenu();
+    if (menu) {
+        PopupMenu(menu);
+        delete menu;
+    }
+}
+void CustomTeskBarIcon::onEventExit(wxCommandEvent&) {
+    this->frame->Close();
+}
+wxMenu *CustomTeskBarIcon::CreatePopupMenu() {
+    wxMenu *menu = new wxMenu{};
+    menu->Append(wx_usage::ID_ICON_TO_FRAME, wxString{"Open"});
+    menu->AppendSeparator();
+    menu->Append(wxID_EXIT, wxString{"Exit"});
+    return menu;
 }
 wxBEGIN_EVENT_TABLE(CustomTeskBarIcon, wxTaskBarIcon)
-    EVT_TASKBAR_LEFT_UP(CustomTeskBarIcon::OnLeftButtonClick)
+    EVT_TASKBAR_LEFT_DCLICK(CustomTeskBarIcon::OnEventIconToFrame<wxTaskBarIconEvent>)
+    EVT_TASKBAR_RIGHT_UP(CustomTeskBarIcon::OnRightButtonClick)
+    EVT_MENU(wx_usage::ID_ICON_TO_FRAME, CustomTeskBarIcon::OnEventIconToFrame<wxCommandEvent>)
+    EVT_MENU(wxID_EXIT, CustomTeskBarIcon::onEventExit)
 wxEND_EVENT_TABLE()
 
 void CustomLogTarget::DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) {
