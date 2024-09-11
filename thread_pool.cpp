@@ -37,5 +37,5 @@ ThreadPool::~ThreadPool() noexcept {
 }
 
 namespace general_usage {
-    ThreadPool threadPool{std::thread::hardware_concurrency()};
+    ThreadPool threadPool{std::thread::hardware_concurrency() / 2};
 }

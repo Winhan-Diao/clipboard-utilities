@@ -34,7 +34,7 @@ wxDirTraverseResult RemoveOldestDirTraverser::OnFile(const wxString& filename) {
 
 bool removeOldest(const wxString& directory) {
     std::string oldestFile{getOldest(directory)};       //debug
-    general_usage::debug(wxString{"file to remove"} << oldestFile);     //debug
+    general_usage::debug(wxString{"file to remove "} << oldestFile);     //debug
     return wxRemoveFile(oldestFile);
 }
 
