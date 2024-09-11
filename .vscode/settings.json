@@ -71,6 +71,7 @@
         "codecvt": "cpp",
         "map": "cpp",
         "xtree": "cpp",
-        "*.xpm": "cpp"
+        "*.xpm": "cpp",
+        "mutex": "cpp"
     }
 }

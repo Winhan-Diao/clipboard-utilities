@@ -1,6 +1,5 @@
 #include "history_cleaner.h"
 
-
 wxDirTraverseResult CountFilesDirTraverser::OnDir(const wxString& dirname) {
     ++count;
     return wxDIR_IGNORE;
@@ -15,16 +14,17 @@ size_t CountFilesDirTraverser::getCount() {
 
 
 wxDirTraverseResult RemoveOldestDirTraverser::OnDir(const wxString& dirname) {
-    general_usage::debug(wxString{"OnDir "} << dirname);      //debug
-    int t = 0;       //debug
-    while (checkIfToClean(dirname)) {
-        general_usage::debug(wxString{"traverse time: "} << t++);     //debug
-        if (!removeOldest(dirname)) {
-            std::cerr << "Somehow fail to clean file. Process interrupted." << "\r\n";      //error
-            wxLogError("Somehow fail to clean file. Process interrupted.");     //error
-            break;
+    general_usage::threadPool.addTasks([dirname](){
+        general_usage::debug(wxString{"OnDir "} << dirname);      //debug
+        int t = 0;       //debug
+        while (checkIfToClean(dirname)) {
+            general_usage::debug(wxString{"traverse time: "} << t++);     //debug
+            if (!removeOldest(dirname)) {
+                throw std::runtime_error{"Somehow fail to clean file. Process interrupted."};       //throw
+                break;
+            }
         }
-    }
+    });
     return wxDIR_IGNORE;
 }
 wxDirTraverseResult RemoveOldestDirTraverser::OnFile(const wxString& filename) {
@@ -33,8 +33,9 @@ wxDirTraverseResult RemoveOldestDirTraverser::OnFile(const wxString& filename) {
 
 
 bool removeOldest(const wxString& directory) {
-    general_usage::debug(wxString{"file to remove"} << getOldest(directory));     //debug
-    return wxRemoveFile(getOldest(directory));
+    std::string oldestFile{getOldest(directory)};       //debug
+    general_usage::debug(wxString{"file to remove"} << oldestFile);     //debug
+    return wxRemoveFile(oldestFile);
 }
 
 wxString getOldest(const wxString& directory) {
@@ -75,14 +76,3 @@ bool checkIfToClean(const wxString& directory) {
     }
     return false;
 }
-
-    // if (fn.Exists())
-    //     std::cout << "size " << fn.GetSize().GetLo() << "\r\n";
-    // else 
-    //     std::cerr << "No such file" << "\r\n";
-
-    // if (!f.IsEmpty()) {
-    //     if (!wxRemoveFile(f)) {
-    //         std::cerr << "[getOldest] " << "Failed to delete a file." << "\r\n";
-    //     } 
-    // }

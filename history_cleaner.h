@@ -1,6 +1,6 @@
 #pragma once
 #include "usage.h"
-
+#include "thread_pool.h"
 
 class CountFilesDirTraverser: public wxDirTraverser {
     size_t count = 0;

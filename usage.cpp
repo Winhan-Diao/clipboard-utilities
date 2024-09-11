@@ -68,6 +68,5 @@ namespace general_usage {
             wxLog::OnLog(wxLOG_Debug, msg, wxLogRecordInfo{file, line, func, "component_"});
         } 
     }
-
 }
 
