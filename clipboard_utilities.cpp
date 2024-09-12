@@ -191,7 +191,6 @@ std::string CustomFrame::clipboardFunc() {
         }
         if (wxTheClipboard->IsSupported(wxDF_METAFILE)) {
             std::cout << "wxDF_METAFILE" << "\r\n";
-            
             logTextCtrl.AppendText("wxDF_METAFILE\r\n");
         }
         if (wxTheClipboard->IsSupported(wxDF_DIF)) {

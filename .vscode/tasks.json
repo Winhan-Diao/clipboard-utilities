@@ -24,6 +24,7 @@
                 "utils.cpp",
                 "dataobjects.cpp",
                 "thread_pool.cpp",
+                "file_operating.cpp",
                 "-o",
                 "${fileDirname}\\Clipboard Utilities.exe",
                 "-lwxmsw32u",
