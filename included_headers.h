@@ -25,5 +25,8 @@
 #include <wx/arrstr.h>
 #include <wx/statline.h>
 #include <wx/scrolwin.h>
+#include <regex>
+
+#include "traits.h"
 
 #include "resources/icon.xpm"

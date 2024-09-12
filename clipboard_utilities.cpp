@@ -201,7 +201,10 @@ std::string CustomFrame::clipboardFunc() {
                 std::cout << size << "\r\n";
                 char *buffer = new char[size]{};
                 difDataObj.GetDataHere(buffer);
-                bufferToFile(buffer, size, ("clipboard-history/sheets/dif-"s + getTimeString() + ".dif"s).c_str());
+                if (size)
+                    bufferToFile(buffer, size, ("clipboard-history/sheets/dif-"s + getTimeString() + ".dif"s).c_str());
+                else
+                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug
                 delete[] buffer;
                 logTextCtrl.AppendText(wxString{} << "wxDF_DIF " << size << "\r\n");
             } else {
@@ -221,7 +224,10 @@ std::string CustomFrame::clipboardFunc() {
                 char *buffer = new char[size]{};
                 new(buffer) int16_t{(int16_t)0xFEFF};
                 unicodeDataObj.GetDataHere(buffer + 2);
-                bufferToFile(buffer, size, ("clipboard-history/unicode-text/unicode-text-"s + getTimeString() + ".txt"s).c_str());
+                if (size)
+                    bufferToFile(buffer, size, ("clipboard-history/unicode-text/unicode-text-"s + getTimeString() + ".txt"s).c_str());
+                else
+                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug                
                 delete[] buffer;
                 logTextCtrl.AppendText("wxDF_UNICODETEXT "s + std::to_string(size) + "\r\n");
             } else {
@@ -267,7 +273,10 @@ std::string CustomFrame::clipboardFunc() {
                 auto text{textDataObj.GetText()};
                 size_t size = strlen(text.c_str());
                 std::cout << size << "\r\n";
-                bufferToFile(text.c_str(), size, ("clipboard-history/text/text-"s + getTimeString() + ".txt"s).c_str());
+                if (size)
+                    bufferToFile(text.c_str(), size, ("clipboard-history/text/text-"s + getTimeString() + ".txt"s).c_str());
+                else
+                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug              
                 logTextCtrl.AppendText("wxDF_TEXT "s + std::to_string(size) + "\r\n");
             } else {
                 std::cout << "\r\n";
@@ -275,14 +284,16 @@ std::string CustomFrame::clipboardFunc() {
         }
         if (wx_usage::ConfigStruct::ENABLE_HTML & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_HTML)) {
             std::cout << "wxDF_HTML" << " ";
-            wxHTMLDataObject htmlDataObj{};
+            UniversalDataObject htmlDataObj{wxDF_HTML};
             if (wxTheClipboard->GetData(htmlDataObj)) {
                 size_t size = htmlDataObj.GetDataSize();
                 std::cout << size << "\r\n";
-                char *buffer = new char[size]{};
-                htmlDataObj.GetDataHere(buffer);
-                bufferToFile(buffer, size, ("clipboard-history/html/html-"s + getTimeString() + ".html"s).c_str());
-                delete[] buffer;
+                std::string strBuffer(size, '\0');
+                htmlDataObj.GetDataHere(&strBuffer[0]);
+                // if (!isEmptyHTML(strBuffer))
+                    bufferToFile(&strBuffer[0], size, ("clipboard-history/html/html-"s + getTimeString() + ".html"s).c_str());
+                // else
+                    // general_usage::debug("The html body is empty or of no body.");     //debug
                 logTextCtrl.AppendText("wxDF_HTML "s + std::to_string(size) + "\r\n");
             } else {
                 std::cout << "\r\n";

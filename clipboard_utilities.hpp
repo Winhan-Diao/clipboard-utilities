@@ -2,6 +2,7 @@
 #include "history_cleaner.h"
 #include "widgets.h"
 #include "utils.h"
+#include "file_operating.h"
 #include "dataobjects.h"
 class CustomLogTarget : public wxLog {
 public:
