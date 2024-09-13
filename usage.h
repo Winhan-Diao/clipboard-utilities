@@ -25,7 +25,7 @@ namespace wx_usage {
     };
     struct FormattedImageInfo {
         wxBitmapType bitmapType;
-        std::string extention;
+        std::string extension;
     };
     const std::map<enumType, std::pair<std::string, FormattedImageInfo>> FORMATTED_IMAGE_TYPE_WITH_INFO{{BMP, {"BMP"s, {wxBITMAP_TYPE_BMP, ".bmp"s}}}
                                                                                                         , {PNG, {"PNG"s, {wxBITMAP_TYPE_PNG, ".png"s}}}
@@ -67,6 +67,15 @@ namespace wx_usage {
     void writeConfig(const ConfigStruct& config);
     ConfigStruct loadConfig();
     extern std::remove_cv_t<decltype(DEFAULT_CONFIG)> CONFIG;
+    struct HashDataStruct {
+        using hash_type = size_t;
+        hash_type unicodeLastHash;
+        hash_type htmlLastHash;
+        hash_type imageLastHash;
+    };
+    void writeHashData(const HashDataStruct& hashData);
+    HashDataStruct loadHashData();
+    extern HashDataStruct LAST_HASH_DATA;
 }
 
 namespace general_usage {

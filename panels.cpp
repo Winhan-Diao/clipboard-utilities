@@ -120,7 +120,7 @@ public:
         checkBox->GetContainingSizer()->Insert(checkBoxIndex + 1, comboBox);
 
         comboBox->Bind(wxEVT_COMBOBOX, [this](auto& e){
-            std::cout << "[Selection] " << comboBox->GetSelection() << "\r\n";
+            general_usage::debug(wxString{"[Selection] "} << comboBox->GetSelection() << "\r\n");      //debug
             wx_usage::CONFIG.*(this->configMemberPtr) = comboBox->GetSelection();
         });
     };

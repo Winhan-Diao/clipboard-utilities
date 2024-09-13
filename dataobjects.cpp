@@ -5,6 +5,7 @@ size_t UniversalDataObject::GetDataSize() const {
 }
 
 bool UniversalDataObject::GetDataHere(void *buf) const {
+    general_usage::debug(wxString{"[UniversalDataObject] "} << "GetDataHere called");       //debug
     memcpy(buf, reinterpret_cast<void *>(m_data), m_datasize);
     return true;
 }
