@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "file_operating.h"
 #include "dataobjects.h"
+#include "clipboard_operating.h"
+
 class CustomLogTarget : public wxLog {
 public:
     void DoLogRecord(wxLogLevel level, const wxString &msg, const wxLogRecordInfo &info) override;

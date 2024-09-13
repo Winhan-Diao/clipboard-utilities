@@ -50,6 +50,26 @@ namespace wx_usage {
         }
     }
     std::remove_cv_t<decltype(DEFAULT_CONFIG)> CONFIG{loadConfig()};
+    void writeHashData(const HashDataStruct& hashData) {
+        if (std::ofstream ofs{"hash.dat", std::ios::out | std::ios::binary | std::ios::trunc}) {
+            ofs.write(reinterpret_cast<const char *>(&hashData), sizeof(HashDataStruct));
+        } else {
+            std::cerr << "[error] Can't load hash to file \"hash.dat\"" << "\r\n";     //error
+            wxLogError("[error] Can't load hash to file \"hash.dat\"");        //error
+        }
+    }
+    HashDataStruct loadHashData() {
+        if (std::ifstream ifs{"hash.dat", std::ios::in | std::ios::binary}) {
+            HashDataStruct hashData;
+            ifs.read(reinterpret_cast<char *>(&hashData), sizeof(HashDataStruct));
+            return hashData;
+        } else {
+            general_usage::debug(wxString{} << "[Only Terminal] " << "There is NO hash.dat file.");      //debug
+            writeHashData(HashDataStruct{0});
+            return HashDataStruct{0};
+        }
+    }
+    HashDataStruct LAST_HASH_DATA{loadHashData()};
 }
 
 namespace general_usage {

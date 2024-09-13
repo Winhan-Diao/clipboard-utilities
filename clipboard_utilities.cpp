@@ -216,55 +216,10 @@ std::string CustomFrame::clipboardFunc() {
             logTextCtrl.AppendText("wxDF_FILENAME\r\n");
         }
         if (wx_usage::ConfigStruct::ENABLE_UNICODE_TEXT & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_UNICODETEXT)) {
-            std::cout << "wxDF_UNICODETEXT" << " ";
-            wxTextDataObject unicodeDataObj{};
-            if (wxTheClipboard->GetData(unicodeDataObj)) {
-                size_t size = unicodeDataObj.GetDataSize() + 2;
-                std::cout << size << "\r\n";
-                char *buffer = new char[size]{};
-                new(buffer) int16_t{(int16_t)0xFEFF};
-                unicodeDataObj.GetDataHere(buffer + 2);
-                if (size)
-                    bufferToFile(buffer, size, ("clipboard-history/unicode-text/unicode-text-"s + getTimeString() + ".txt"s).c_str());
-                else
-                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug                
-                delete[] buffer;
-                logTextCtrl.AppendText("wxDF_UNICODETEXT "s + std::to_string(size) + "\r\n");
-            } else {
-                std::cout << "\r\n";
-            }
+            UnicodeDataRecord()();
         }
         if (wx_usage::ConfigStruct::ENABLE_DIB & wx_usage::CONFIG.binaryData && (wxTheClipboard->IsSupported(wxDF_DIB) || wxTheClipboard->IsSupported(wxDF_BITMAP))) {
-            std::cout << "wxDF_DIB/wxDF_BITMAP" << " ";
-            wxBitmapDataObject bitmapDataObj{};
-            if (wxTheClipboard->GetData(bitmapDataObj)) {
-                size_t size = bitmapDataObj.GetDataSize() + 14;
-                std::cout << size << "\r\n";
-                wxBitmap bitmap{bitmapDataObj.GetBitmap()};
-                if (bitmap.IsOk()) {
-                    wxFileName::Mkdir(".\\clipboard-history\\image\\", wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
-                    if (wx_usage::CONFIG.binaryData & wx_usage::ConfigStruct::STORE_FORMATTED_IMG) {
-                        if (wx_usage::CONFIG.imageType == wx_usage::ICO) {
-                            general_usage::debug(wxString{"width "} << bitmap.GetWidth() << "; height" << bitmap.GetHeight());        //debug
-                            if (std::max(bitmap.GetWidth(), bitmap.GetHeight()) > 255) {
-                                if (bitmap.GetHeight() > bitmap.GetWidth())
-                                    wxBitmap::Rescale(bitmap, wxSize{bitmap.GetWidth() * 255 / bitmap.GetHeight(), 255});
-                                else
-                                    wxBitmap::Rescale(bitmap, wxSize{255, bitmap.GetHeight() * 255 / bitmap.GetWidth()});
-                            }
-                        }
-                        bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::CONFIG.imageType).second.extention, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::CONFIG.imageType).second.bitmapType);
-                    } else {
-                        bitmap.SaveFile(".\\clipboard-history\\image\\bitmap-"s + getTimeString() + wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.extention, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO.at(wx_usage::BMP).second.bitmapType);
-                    } 
-                } else {
-                    std::cerr << "Bitmap Is Not OK" << "\r\n";      //error
-                    wxLogError("Bitmap Is Not OK");     //error
-                }
-                logTextCtrl.AppendText("wxDF_DIB/wxDF_BITMAP "s + std::to_string(size) + "\r\n");
-            } else {
-                std::cout << "\r\n";
-            }
+            ImageDataRecord()();
         }
         if (wx_usage::ConfigStruct::ENABLE_TEXT & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_TEXT)) {
             std::cout << "wxDF_TEXT" << " ";
@@ -283,21 +238,7 @@ std::string CustomFrame::clipboardFunc() {
             }
         }
         if (wx_usage::ConfigStruct::ENABLE_HTML & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_HTML)) {
-            std::cout << "wxDF_HTML" << " ";
-            UniversalDataObject htmlDataObj{wxDF_HTML};
-            if (wxTheClipboard->GetData(htmlDataObj)) {
-                size_t size = htmlDataObj.GetDataSize();
-                std::cout << size << "\r\n";
-                std::string strBuffer(size, '\0');
-                htmlDataObj.GetDataHere(&strBuffer[0]);
-                // if (!isEmptyHTML(strBuffer))
-                    bufferToFile(&strBuffer[0], size, ("clipboard-history/html/html-"s + getTimeString() + ".html"s).c_str());
-                // else
-                    // general_usage::debug("The html body is empty or of no body.");     //debug
-                logTextCtrl.AppendText("wxDF_HTML "s + std::to_string(size) + "\r\n");
-            } else {
-                std::cout << "\r\n";
-            }
+            HTMLDataRecord()();
         }
         std::cout << "= = = = = =" << "\r\n";
         logTextCtrl.AppendText("= = = = = = = = = =\r\n");
@@ -309,6 +250,7 @@ std::string CustomFrame::clipboardFunc() {
 
 void CustomFrame::OnClose (wxCloseEvent& e) {
     wx_usage::writeConfig(wx_usage::CONFIG);
+    wx_usage::writeHashData(wx_usage::LAST_HASH_DATA);
     general_usage::debug(wxString{} << "[Frame] " << "exit!");      //debug
     Destroy();
 }
