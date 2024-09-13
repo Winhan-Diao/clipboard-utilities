@@ -1,7 +1,6 @@
 #include "history_cleaner.h"
 
 wxDirTraverseResult CountFilesDirTraverser::OnDir(const wxString& dirname) {
-    ++count;
     return wxDIR_IGNORE;
 }
 wxDirTraverseResult CountFilesDirTraverser::OnFile(const wxString& filename) {

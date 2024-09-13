@@ -74,6 +74,7 @@ namespace general_usage {
     bool endianTest();
     extern bool isBE;
     #define debug(msg) _debug(msg, __FILE__, __LINE__, __FUNCTION__)
+    extern std::mutex msgMutext;
     void _debug(const wxString& msg, const char* file, int line, const char* func);
 }
 

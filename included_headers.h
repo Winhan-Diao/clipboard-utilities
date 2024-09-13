@@ -26,6 +26,7 @@
 #include <wx/statline.h>
 #include <wx/scrolwin.h>
 #include <regex>
+#include <mutex>
 
 #include "traits.h"
 

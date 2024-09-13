@@ -8,7 +8,7 @@ extern "C" [[deprecated]] int __stdcall CustomWinMainCRTStartup() {
 }
 
 namespace windows_usage {
-    struct Setup{
+    [[deprecated]] struct Setup{
         Setup() {
             SetDllDirectory(_T(".\\libs"));    
         }
@@ -62,8 +62,10 @@ namespace general_usage {
         return isBE;
     }
     bool isBE = endianTest();
+    std::mutex msgMutext{};
     void _debug(const wxString& msg, const char* file, int line, const char* func) {
         if (wx_usage::ConfigStruct::ENABLE_VERBOSE & wx_usage::CONFIG.binaryData) {
+            std::lock_guard<std::mutex> lg{msgMutext};
             std::cout << msg << "\r\n";
             wxLog::OnLog(wxLOG_Debug, msg, wxLogRecordInfo{file, line, func, "component_"});
         } 
