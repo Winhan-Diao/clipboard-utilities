@@ -62,8 +62,9 @@ namespace wx_usage {
         static constexpr binaryDataType CLEAN_BY_COUNT = 1 << 8;
         static constexpr binaryDataType STORE_FORMATTED_IMG = 1 << 9;
         static constexpr binaryDataType ENABLE_VERBOSE = 1 << 10;
+        static constexpr binaryDataType AVOID_SAVING_THE_SAME = 1 << 11;
 
-    } DEFAULT_CONFIG{0b000'1001'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
+    } DEFAULT_CONFIG{0b1000'1001'1111, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, (ConfigStruct::valueType)-1, FormattedImageType::BMP};
     void writeConfig(const ConfigStruct& config);
     ConfigStruct loadConfig();
     extern std::remove_cv_t<decltype(DEFAULT_CONFIG)> CONFIG;
@@ -72,6 +73,8 @@ namespace wx_usage {
         hash_type unicodeLastHash;
         hash_type htmlLastHash;
         hash_type imageLastHash;
+        hash_type difLastHash;
+        hash_type textLastHash;
     };
     void writeHashData(const HashDataStruct& hashData);
     HashDataStruct loadHashData();

@@ -194,22 +194,7 @@ std::string CustomFrame::clipboardFunc() {
             logTextCtrl.AppendText("wxDF_METAFILE\r\n");
         }
         if (wxTheClipboard->IsSupported(wxDF_DIF)) {
-            std::cout << "wxDF_DIF" << " ";
-            UniversalDataObject difDataObj{wxDF_DIF};
-            if (wxTheClipboard->GetData(difDataObj)) {
-                size_t size = difDataObj.GetDataSize();
-                std::cout << size << "\r\n";
-                char *buffer = new char[size]{};
-                difDataObj.GetDataHere(buffer);
-                if (size)
-                    bufferToFile(buffer, size, ("clipboard-history/sheets/dif-"s + getTimeString() + ".dif"s).c_str());
-                else
-                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug
-                delete[] buffer;
-                logTextCtrl.AppendText(wxString{} << "wxDF_DIF " << size << "\r\n");
-            } else {
-                std::cout << "\r\n";
-            }
+            DIFDataRecord()();
         }
         if (wxTheClipboard->IsSupported(wxDF_FILENAME)) {
             std::cout << "wxDF_FILENAME" << "\r\n";
@@ -222,20 +207,7 @@ std::string CustomFrame::clipboardFunc() {
             ImageDataRecord()();
         }
         if (wx_usage::ConfigStruct::ENABLE_TEXT & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_TEXT)) {
-            std::cout << "wxDF_TEXT" << " ";
-            wxTextDataObject textDataObj{};
-            if (wxTheClipboard->GetData(textDataObj)) {
-                auto text{textDataObj.GetText()};
-                size_t size = strlen(text.c_str());
-                std::cout << size << "\r\n";
-                if (size)
-                    bufferToFile(text.c_str(), size, ("clipboard-history/text/text-"s + getTimeString() + ".txt"s).c_str());
-                else
-                    general_usage::debug("Ignored writing to file because the buffer is empty.");       //debug              
-                logTextCtrl.AppendText("wxDF_TEXT "s + std::to_string(size) + "\r\n");
-            } else {
-                std::cout << "\r\n";
-            }
+            TextDataRecord()();
         }
         if (wx_usage::ConfigStruct::ENABLE_HTML & wx_usage::CONFIG.binaryData && wxTheClipboard->IsSupported(wxDF_HTML)) {
             HTMLDataRecord()();

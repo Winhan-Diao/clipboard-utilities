@@ -72,3 +72,25 @@ protected:
 public:
     ImageDataRecord(): AbstractDataRecord{new wxBitmapDataObject{}}, bitmap{nullptr} {}
 };
+
+struct DIFDataRecord: public AbstractBufferBaseDataRecord {
+protected:
+    bool saveClipboardToDataObject() override;
+    bool saveDataObjectToBuffer() override;
+    void saveBufferToFile() override;
+    void saveHashFromBuffer() override;
+public:
+    DIFDataRecord(): AbstractBufferBaseDataRecord(new UniversalDataObject(wxDF_DIF)) {}
+};
+
+struct TextDataRecord: public AbstractDataRecord {
+private:
+    std::unique_ptr<wxString> buffer;
+protected:
+    bool saveClipboardToDataObject() override;
+    bool saveDataObjectToBuffer() override;
+    void saveBufferToFile() override;
+    void saveHashFromBuffer() override;
+public:
+    TextDataRecord(): AbstractDataRecord(new wxTextDataObject()), buffer{nullptr} {}
+};
