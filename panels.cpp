@@ -120,7 +120,7 @@ public:
         checkBox->GetContainingSizer()->Insert(checkBoxIndex + 1, comboBox);
 
         comboBox->Bind(wxEVT_COMBOBOX, [this](auto& e){
-            general_usage::debug(wxString{"[Selection] "} << comboBox->GetSelection() << "\r\n");      //debug
+            general_usage::debug(wxString{"[Selection] "} << comboBox->GetSelection());      //debug
             wx_usage::CONFIG.*(this->configMemberPtr) = comboBox->GetSelection();
         });
     };
@@ -151,7 +151,9 @@ ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
 
     wxPanel *recordingConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Recording Config"});
 
-    wxPanel *historyConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Storing Config"});
+    wxPanel *savingConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"File Saving Config"});
+
+    wxPanel *historyConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"History Managing Config"});
 
     wxPanel *loggingConfigPanel = builder::buildVStaticBoxPanel(this, wxString{"Logging Config"});
 
@@ -171,8 +173,9 @@ ConfigPanel::ConfigPanel(wxWindow *parent): wxPanel{parent} {
                             , std::make_tuple(historyConfigPanel, "Clean data passed certain days. (days)", wx_usage::ConfigStruct::CLEAN_BY_DAY, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxDay))
                             , std::make_tuple(historyConfigPanel, "Clean the oldest record when reaching certain storage limit. (MB)", wx_usage::ConfigStruct::CLEAN_BY_STORAGE, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxStorage))
                             , std::make_tuple(historyConfigPanel, "Clean the oldest record by restricting the maximum count.", wx_usage::ConfigStruct::CLEAN_BY_COUNT, (std::function<std::shared_ptr<BaseCheckBoxFunc>(wxCheckBox *, const wx_usage::ConfigStruct::binaryDataType&)>)std::bind(spinCtrlCheckBoxLam, _1, _2, &wx_usage::ConfigStruct::maxCount))
-                            , std::make_tuple(historyConfigPanel, "Save image as other formats (default BMP)", wx_usage::ConfigStruct::STORE_FORMATTED_IMG, comboBoxLamBuilder(&wx_usage::ConfigStruct::imageType, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO))
+                            , std::make_tuple(savingConfigPanel, "Save image as other formats (default BMP)", wx_usage::ConfigStruct::STORE_FORMATTED_IMG, comboBoxLamBuilder(&wx_usage::ConfigStruct::imageType, wx_usage::FORMATTED_IMAGE_TYPE_WITH_INFO))
                             , std::make_tuple(loggingConfigPanel, "Enable Verbose Logging", wx_usage::ConfigStruct::ENABLE_VERBOSE, checkBoxLam)
+                            , std::make_tuple(savingConfigPanel, "Avoid recording the same file from the last one", wx_usage::ConfigStruct::AVOID_SAVING_THE_SAME, checkBoxLam)
                             };
     for (auto& [panel, str, shift, checkBoxLam] : checkBoxConfigInfo) {
         auto checkBox = new wxCheckBox{panel, wxID_ANY, str};
